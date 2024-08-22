@@ -1,0 +1,21 @@
+{
+    "name": "farhang-sa/php-maxtools",
+    "description": "A collection of php libs for web",
+    "type": "library",
+    "version" : "1.0.0" ,
+    "keywords": [ "php" , "iran" , "sms" , "payamak" , "Frada" , "Melli" , "WebOne" , "payment" , "Zarinpal" , "pay.ir" , "NextPay" , "database" , "mysql" , "sqlite" ] ,
+    "authors": [
+        {
+            "name": "farhang-sa",
+            "email": "Saeedi.Farhang@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "require": {
+        "php": ">=5"
+    } ,
+    "autoload": {
+        "files": [ "MaxTools.php" ]
+    }
+}
