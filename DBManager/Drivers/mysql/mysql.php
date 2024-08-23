@@ -3,7 +3,7 @@
 defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
 #[AllowDynamicProperties]
-final class MysqlConnector implements SQLConnectorInterface {
+final class MysqlDriver implements SQLConnectorInterface {
 
 	public $SystemName = "mysql";
 

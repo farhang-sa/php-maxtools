@@ -1,7 +1,7 @@
 <?php defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
 #[AllowDynamicProperties]
-final class MySqliConnector extends mysqli implements SQLDriverInterface {
+final class MySqliDriver extends mysqli implements SQLDriverInterface {
 
 	public $InterfaceName = "Mysqli";
 

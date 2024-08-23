@@ -97,8 +97,7 @@ class Server {
 		if ( $Driver ) {
 			
 			$ConnectorFile = self::$ROOT . self::$DS . 'Drivers' . 
-
-			self::$DS . strtolower( $Driver ) . self::$DS . strtolower( $Driver ) . '.php' ;
+				self::$DS . strtolower( $Driver ) . self::$DS . strtolower( $Driver ) . '.php' ;
 			
 			$ConnectorFile = realpath( $ConnectorFile );
 

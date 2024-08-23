@@ -3,7 +3,7 @@
 defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
 #[AllowDynamicProperties]
-final class SqliteConnector extends SQLite3 implements SQLDriverInterface {
+final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 
 	public $SystemName = "sqlite";
 
