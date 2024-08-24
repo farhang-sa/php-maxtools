@@ -2,97 +2,87 @@
 
 defined( 'MaxSMSInit' ) or die( 'Access Denied' );
 
-abstract class FardaPayamakBase implements SMS {
-
-	private $CurlUrl = "https://ippanel.com/services.jspd" ;
-	private $GetUrl  = "http://ippanel.com/class/sms/webservice/send_url.php" ;
-	private $SoapUrl = "http://ippanel.com/class/sms/wsdlservice/server.php?wsdl" ;
+abstract class FardaPayamakBase extends SMS {
 	
     protected abstract function UserName();
 	protected abstract function PassWord();
 	protected abstract function FromNumb();
 
-	public function SendByCurl( $msg , $to , $PatternId = null ){
+    public function GetRESTUrlPost(){ 
+    	return 'https://ippanel.com/services.jspd'; }
 
-		$url = "";
-		
-		$rcpt_nm = array( $to );
-		$param = array (
+    public function GetRESTUrlGET(){ 
+    	return 'http://ippanel.com/class/sms/webservice/send_url.php'; }
+
+    public function GetSOAPUrl(){ 
+    	return 'http://ippanel.com/class/sms/wsdlservice/server.php?wsdl'; }
+
+	protected function BuildDataArray( $msg , $to ){
+		return array (
 			'uname'     => $this->UserName() ,
 			'pass'      => $this->PassWord() ,
 			'from'      => $this->FromNumb() ,
 			'message'   => $msg ,
-			'to'=>json_encode($rcpt_nm),
-			'op'=>'send'
+			'to' 		=> json_encode( [ $to ] ),
+			'op' 		=>'send'
 		);
-					
-		$handler = curl_init($this->CurlUrl);             
-		curl_setopt($handler, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($handler, CURLOPT_POSTFIELDS, $param);                       
-		curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
-		$response2 = curl_exec($handler);
+	}
+
+	public function SendWithRESTCurl( $msg , $to , $PatternId = null ){
+
+		$handler = $this->BuildDataArray( $msg , $to );
+		$handler = $this->BuildCurlContext( $handler );
 		
-		$response2 = json_decode($response2);
-		$res_code = $response2[0];
-		$res_data = $response2[1];
+		$response = curl_exec( $handler );
+		$response = json_decode( $response );
+		$res_code = $response[0];
+		$res_data = $response[1];
 		
 		return $res_data;
 
 	}
 
-	public function SendByGet( $msg , $to , $PatternId = null ) {
+	public function SendWithRESTPost( $msg , $to , $PatternId = null ){
 
-		$SMS = $this->GetUrl ;
-		$SMS .= "?uname=" . $this->UserName() ;
-		$SMS .= "&pass=" . $this->PassWord() ;
-		$SMS .= "&from=" . $this->FromNumb() ;
-		$SMS .= "&to=" . $to ;
-		$SMS .= "&msg=" . $msg ;
-		return @file_get_contents( $SMS ) ;
+		$handler = $this->BuildDataArray( $msg , $to );
+		$handler = $this->BuildHttpPostRequestContext( $handler );
+		
+		return @file_get_contents( $this->GetRESTUrlPost() , false, $handler );
 
 	}
 
-	public function SendBySoap( $msg , $to , $PatternId = null ){
+	public function SendWithRESTGet( $msg , $to , $PatternId = null ) {
 
-		ini_set("soap.wsdl_cache_enabled", "0");
-		try { $client = new SoapClient( $this->SoapUrl , array('encoding'=>'UTF-8') );
+		$handler = array(
+			'uname' 	=> $this->UserName() ,
+		    'pass' 		=> $this->PassWord() ,
+		    'from' 	   	=> $this->FromNumb() ,
+		    'to'		=> $to ,
+		    'msg'		=> $msg 
+		);
+		
+		$handler = $this->GetRESTUrlGET() . '?' . http_build_query( $handler ) ;
+
+		return @file_get_contents( $handler ) ;
+
+	}
+
+	public function SendWithSOAP( $msg , $to , $PatternId = null ){
+
+		$client = $this->BuildSoapClient();
+
+		try {
 			$user 		= $this->UserName() ;
 		    $pass 		= $this->PassWord() ;
 		    $fromNum 	= $this->FromNumb() ;
 		    $toNum 		= array( $to );
 		    $messageContent = $msg ;
 			$op  		= "send";
-			
 			//If you want to send in the future  ==> $time = '2016-07-30' //$time = '2016-07-30 12:50:50'
 			$time = '';
-	
-			return  $client->SendSMS( $fromNum, $toNum, $messageContent, $user, $pass, $time, $op);
+			return  $client->SendSMS( $fromNum, $toNum, $messageContent, $user, $pass, $time, $op );
 		} catch (SoapFault $ex) { return $ex->faultstring; }
 
-	}
-
-	public function SendVerificationCodeBySoap( $verification , $to , $PatternId = null ){
-		$client = new SoapClient( $this->SoapUrl , array('encoding'=>'UTF-8') ) ;
-		$user 		= $this->UserName() ;
-	    $pass 		= $this->PassWord() ;
-	    $fromNum 	= $this->FromNumb() ;
-		$toNum = array( $to ); 
-		$pattern_code = "jr0x27j55s"; 
-		$input_data = array( "amuzak-verification-code" => $verification ); 
-
-		return $client->sendPatternSms( $fromNum, $toNum, $user, $pass, $pattern_code, $input_data);
-	}
-
-	public function SendUnlockKeyBySoap( $key , $to , $PatternId = null ){
-		$client = new SoapClient( $this->SoapUrl , array('encoding'=>'UTF-8') ) ;
-		$user 		= $this->UserName() ;
-	    $pass 		= $this->PassWord() ;
-	    $fromNum 	= $this->FromNumb() ;
-		$toNum = array( $to ); 
-		$pattern_code = "tsi26hppv4"; 
-		$input_data = array( "unlock-key" => $key ); 
-
-		return $client->sendPatternSms( $fromNum, $toNum, $user, $pass, $pattern_code, $input_data);
 	}
 
 }

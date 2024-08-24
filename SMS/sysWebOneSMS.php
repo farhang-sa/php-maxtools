@@ -2,74 +2,87 @@
 
 defined( 'MaxSMSInit' ) or die( 'Access Denied' );
 
-abstract class WebOneSMSBase implements SMS {
+abstract class WebOneSMSBase extends SMS {
 
-	protected $PostUrl = "http://webone-sms.ir/SMSInOutBox/Send" ;
-	protected $GetUrl  = "http://webone-sms.ir/SMSInOutBox/SendSms" ;
-	protected $SoapUrl = "http://payamak-service.ir/SendService.svc?wsdl" ;
-	
 	protected abstract function UserName();
 	protected abstract function PassWord();
 	protected abstract function FromNumb();
 
-	public function SendByPost( $msg , $to , $PatternId = null ){
+    public function GetRESTUrlPost(){ 
+    	return 'http://webone-sms.ir/SMSInOutBox/Send'; }
 
-		$params = array( "UserName" => $this->UserName() , 
-		    "Password" => $this->PassWord() );
-		$params[ "From" ] = $this->FromNumb() ;
-		$params[ "To" ] = $to ;
-		$params[ "Message" ] = $msg ;
+    public function GetRESTUrlGET(){ 
+    	return 'http://webone-sms.ir/SMSInOutBox/SendSms'; }
 
-		// Build Http query using params
-		$query = http_build_query ($params);
+    public function GetSOAPUrl(){ 
+    	return 'http://payamakapi.ir/SendService.svc?wsdl'; }
 
-		// Create Http context details
-		$contextData = array ( 
-			'method' => 'POST', 
-			'header' => "Connection: close\r\n".
-			"Content-Length: ".strlen($query)."\r\n" , 
-			"Content-type: application/x-www-form-urlencoded\r\n" , 
-			'content'=> $query);
+	protected function BuildPostDataArray( $msg , $to ){
+		return array( 
+			'UserName' 	=> $this->UserName() , // YES UserName not Username
+		    'Password' 	=> $this->PassWord() ,
+		    'From' 		=> $this->FromNumb() ,
+		    'To' 		=> $to ,
+		    'Message' 	=> $msg 
+		);
+	}
 
-		// Create context resource for our request
-		$context = stream_context_create (array( 'http' => $contextData ));
+	public function SendWithRESTCurl( $msg , $to , $PatternId = null ){
 
-		// Read page rendered as result of your POST request
-		return @file_get_contents( $this->PostUrl, false, $context);
+		$handler = $this->BuildPostDataArray( $msg , $to );
+		$handler = $this->BuildCurlContext( $handler );
+		
+		$response = curl_exec( $handler );
+		$response = json_decode( $response );
+		$res_code = $response[0];
+		$res_data = $response[1];
+		
+		return $res_data;
 
 	}
 
-	public function SendByGet( $msg , $to , $PatternId = null ) {
+	public function SendWithRESTPost( $msg , $to , $PatternId = null ){
 
-		$SMS = $this->GetUrl ;
-		$SMS .= "?username=" . $this->UserName() ;
-		$SMS .= "&password=" . $this->PassWord() ;
-		$SMS .= "&from=" . $this->FromNumb() ;
-		$SMS .= "&to=" . $to ;
-		$SMS .= "&text=" . $msg ;
+		$handler = $this->BuildPostDataArray( $msg , $to );
+		$handler = $this->BuildHttpPostRequestContext( $handler );
 
-		return @file_get_contents( $SMS ) ;
+		return @file_get_contents( $this->GetRESTUrlPost() , false, $handler );
 
 	}
 
-	public function SendBySoap( $msg , $to , $PatternId = null ){
+	public function SendWithRESTGet( $msg , $to , $PatternId = null ) {
 
-		ini_set("soap.wsdl_cache_enabled", "0");
-		$sms_client = new SoapClient( $this->SoapUrl , array('encoding'=>'UTF-8'));
+		$handler = array(
+			'username' 	=> $this->UserName() ,
+		    'password' 	=> $this->PassWord() ,
+		    'from' 	   	=> $this->FromNumb() ,
+		    'to'		=> $to ,
+		    'text'		=> $msg 
+		);
+		
+		$handler = $this->GetRESTUrlGET() . '?' . http_build_query( $handler ) ;
+
+		return @file_get_contents( $handler ) ;
+
+	}
+
+	public function SendWithSOAP( $msg , $to , $PatternId = null ){
+
+		$client = $this->BuildSoapClient();
 
 		try {
-			$parameters['userName'] = $this->UserName() ;
-			$parameters['password'] = $this->PassWord() ;
-			$parameters['fromNumber'] = $this->FromNumb() ;
-			$parameters['toNumbers'] = array( $to );
-			$parameters['messageContent'] = $msg ;
-			$parameters['isFlash'] = false;
+			$handler['userName'] = $this->UserName() ;
+			$handler['password'] = $this->PassWord() ;
+			$handler['fromNumber'] = $this->FromNumb() ;
+			$handler['toNumbers'] = array( $to );
+			$handler['messageContent'] = $msg ;
+			$handler['isFlash'] = false;
 			$recId = array();
 			$status = array();
-			$parameters['recId'] = &$recId ;
-			$parameters['status'] = &$status ;
-			return $sms_client->SendSMS($parameters)->SendSMSResult;
-		} catch (Exception $e) { return false; }
+			$handler['recId'] = &$recId ;
+			$handler['status'] = &$status ;
+			return $client->SendSMS( $handler )->SendSMSResult;
+		} catch ( Exception $e ) { return false; }
 
 	}
 

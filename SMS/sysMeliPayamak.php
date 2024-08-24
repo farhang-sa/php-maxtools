@@ -2,36 +2,43 @@
 
 defined( 'MaxSMSInit' ) or die( 'Access Denied' );
 
-abstract class MeliPayamakBase implements SMS {
+abstract class MeliPayamakBase extends SMS {
 
-	private $CurlUrl = "https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber" ;
-	private $GetUrl  = "http://api.payamak-panel.com/post/Send.asmx/SendByBaseNumber2" ;
-	private $SoapUrl = "http://api.payamak-panel.com/post/send.asmx?wsdl" ;
-    
     protected abstract function UserName();
 	protected abstract function PassWord();
-	protected abstract function PatternId( $pid );
+	protected abstract function FromNumb();
 
-	public function SendByCurl( $msg , $to , $PatternId = null ){
-	    
-	    $data = array (
-			'username'  => $this->UserName() ,
-			'password'  => $this->PassWord() ,
-			'text'      => $msg ,
-			'to'        => $to,
-			'bodyId'    => $this->PatternId( $PatternId )
+    public function GetRESTUrlPost(){ 
+    	return 'https://rest.payamak-panel.com/api/SendSMS/SendSMS'; }
+
+    public function GetRESTUrlGET(){ 
+    	return null; } ////////////////// No RESTGet!
+
+    public function GetSOAPUrl(){ 
+    	return 'http://api.payamak-panel.com/post/send.asmx?wsdl'; }
+
+	protected function BuildDataArray( $msg , $to ){
+		$data = array( 
+			'username' 	=> $this->UserName() , // YES UserName not Username
+		    'password' 	=> $this->PassWord() ,
+		    'to' 		=> $to ,
+		    'text' 		=> $msg 
 		);
-        $post_data = http_build_query($data);
-        $handle = curl_init( $this->CurlUrl );
-        curl_setopt($handle, CURLOPT_HTTPHEADER, array(
-            'content-type' => 'application/x-www-form-urlencoded'
-        ));
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($handle, CURLOPT_POST, true);
-        curl_setopt($handle, CURLOPT_POSTFIELDS, $post_data);
-        $response = curl_exec( $handle );
+
+		if( $this->FromNumb() )
+			$data[ 'from' ] = $this->FromNumb();
+
+		return $data ;
+	}
+
+	public function SendWithRESTCurl( $msg , $to , $PatternId = null ){
+	    
+		$handler = $this->BuildPostDataArray( $msg , $to );
+		if( $PatternId )
+			$handler[ 'bodyId' ] = $PatternId ;
+		$handler = $this->BuildCurlContext( $handler );
+
+        $response = curl_exec( $handler );
         
         if( is_string( $response ) && strlen( $response ) >= 15 ) 
             return true ;
@@ -39,67 +46,52 @@ abstract class MeliPayamakBase implements SMS {
 
 	}
 
-	public function SendByGet( $msg , $to , $PatternId = null ){
+	public function SendWithRESTPost( $msg , $to , $PatternId = null ){
 
-		$SMS = $this->GetUrl ;
-		$SMS .= "?username=" . $this->UserName() ;
-		$SMS .= "&password=" . $this->PassWord() ;
-		$SMS .= "&to=" . $to ;
-		$SMS .= "&text=" . $msg ;
-		$SMS .= "&bodyId=" . $this->PatternId( $PatternId ) ;
-		return @file_get_contents( $SMS ) ;
+		$handler = $this->BuildPostDataArray( $msg , $to );
+		if( $PatternId )
+			$handler[ 'bodyId' ] = $PatternId ;
+		$handler = $this->BuildHttpPostRequestContext( $handler );
+
+		return @file_get_contents( $this->GetRESTUrlPost() , false, $handler );
 
 	}
 
-	public function SendBySoap( $msg , $to , $PatternId = null ){
+	public function SendWithRESTGet( $msg , $to , $PatternId = null ){
 
-		ini_set("soap.wsdl_cache_enabled", "0");
+		$handler = $this->BuildPostDataArray( $msg , $to );
+		if( $PatternId )
+			$handler[ 'bodyId' ] = $PatternId ;
+		
+		$handler = $this->GetRESTUrlGET() . '?' . http_build_query( $handler ) ;
+
+		return @file_get_contents( $handler ) ;
+
+	}
+
+	public function SendWithSOAP( $msg , $to , $PatternId = null ){
+
+		$client = $this->BuildSoapClient();
+
 		try { 
-		    $sms = new SoapClient( $this->SoapUrl ,array('encoding'=>'UTF-8') );
-			$data = array(
+			
+			$handler = array(
                 "username"  => $this->UserName() ,
                 "password"  => $this->PassWord() ,
                 "text"      => array( $msg ) ,
-                "to"        => $to ,
-                "bodyId"    => $this->PatternId( $PatternId ) );
-			return  $sms->SendByBaseNumber($data)->SendByBaseNumberResult;
-		} catch (SoapFault $ex) { return $ex->faultstring; }
-
-	}
-	
-	public function SendVerificationCodeBySoap( $verification , $to , $PatternId = null ){
-        
-		ini_set("soap.wsdl_cache_enabled", "0");
-		try { 
-		    $sms = new SoapClient( $this->SoapUrl ,array('encoding'=>'UTF-8') );
-			$data = array(
-                "username"  => $this->UserName() ,
-                "password"  => $this->PassWord() ,
-                "text"      => array( $verification ) ,
-                "to"        => $to ,
-                "bodyId"    => $this->PatternId( $PatternId ) 
+                "to"        => $to 
             );
-			$data = $sms->SendByBaseNumber($data)->SendByBaseNumberResult;
-			return $data ;
-		} catch (SoapFault $ex) { return $ex->faultstring; }
-		
-	}
 
-	public function SendUnlockKeyBySoap( $key , $to , $PatternId = null ){
+			if( $this->FromNumb() )
+				$handler[ 'from' ] = $this->FromNumb();
+			
+			if( $PatternId )
+				$handler[ 'bodyId' ] = $PatternId ;
 
-		ini_set("soap.wsdl_cache_enabled", "0");
-		try { 
-		    $sms = new SoapClient( $this->SoapUrl ,array('encoding'=>'UTF-8') );
-			$data = array(
-                "username"  => $this->UserName() ,
-                "password"  => $this->PassWord() ,
-                "text"      => array( $key ) ,
-                "to"        => $to ,
-                "bodyId"    => $this->PatternId( $PatternId ) 
-            );
-			$data = $sms->SendByBaseNumber($data)->SendByBaseNumberResult;
-			return $data ;
+			return  $client->SendByBaseNumber( $handler )->SendByBaseNumberResult;
+
 		} catch (SoapFault $ex) { return $ex->faultstring; }
+
 	}
 
 } ?>
