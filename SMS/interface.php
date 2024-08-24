@@ -14,15 +14,18 @@ abstract class SMS {
 
     public abstract function SendWithSOAP( $msg , $to , $PatternId ); // Soap Service
     
-    public function Send( $msg , $to , $PatternId ){ // REST Api
+    public function Send( $msg , $to , $PatternId = null ){ // REST Api
         
+        // Pattern! send via soap
+        if( is_array( $msg ) )
+
+            return $this->SendWithSOAP( $msg , $to , $PatternId );
+
         // try order : rest-curl , rest-post , rest-get , soap
         if( $this->GetRESTUrlPost() ){
             
             if( extension_loaded( 'curl' ) && function_exists( 'curl_init' ) )
-            
                 return $this->SendWithRESTCurl( $msg , $to , $PatternId );
-            
             else return $this->SendWithRESTPost( $msg , $to , $PatternId ); 
 
         } else if( $this->GetRESTUrlGET() ) 

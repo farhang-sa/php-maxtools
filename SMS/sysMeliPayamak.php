@@ -11,8 +11,8 @@ abstract class MeliPayamakBase extends SMS {
     public function GetRESTUrlPost(){ 
     	return 'https://rest.payamak-panel.com/api/SendSMS/SendSMS'; }
 
-    public function GetRESTUrlGET(){ 
-    	return null; } ////////////////// No RESTGet!
+    public function GetRESTUrlGET(){ // soap as get-api !!!
+    	return 'http://api.payamak-panel.com/post/Send.asmx/SendByBaseNumber2' ; }
 
     public function GetSOAPUrl(){ 
     	return 'http://api.payamak-panel.com/post/send.asmx?wsdl'; }
@@ -33,7 +33,7 @@ abstract class MeliPayamakBase extends SMS {
 
 	public function SendWithRESTCurl( $msg , $to , $PatternId = null ){
 	    
-		$handler = $this->BuildPostDataArray( $msg , $to );
+		$handler = $this->BuildDataArray( $msg , $to );
 		if( $PatternId )
 			$handler[ 'bodyId' ] = $PatternId ;
 		$handler = $this->BuildCurlContext( $handler );
@@ -48,7 +48,7 @@ abstract class MeliPayamakBase extends SMS {
 
 	public function SendWithRESTPost( $msg , $to , $PatternId = null ){
 
-		$handler = $this->BuildPostDataArray( $msg , $to );
+		$handler = $this->BuildDataArray( $msg , $to );
 		if( $PatternId )
 			$handler[ 'bodyId' ] = $PatternId ;
 		$handler = $this->BuildHttpPostRequestContext( $handler );
@@ -59,7 +59,7 @@ abstract class MeliPayamakBase extends SMS {
 
 	public function SendWithRESTGet( $msg , $to , $PatternId = null ){
 
-		$handler = $this->BuildPostDataArray( $msg , $to );
+		$handler = $this->BuildDataArray( $msg , $to );
 		if( $PatternId )
 			$handler[ 'bodyId' ] = $PatternId ;
 		
@@ -74,21 +74,19 @@ abstract class MeliPayamakBase extends SMS {
 		$client = $this->BuildSoapClient();
 
 		try { 
-			
-			$handler = array(
-                "username"  => $this->UserName() ,
-                "password"  => $this->PassWord() ,
-                "text"      => array( $msg ) ,
-                "to"        => $to 
-            );
 
-			if( $this->FromNumb() )
-				$handler[ 'from' ] = $this->FromNumb();
-			
-			if( $PatternId )
+			if( ! is_array( $msg ) )
+				$msg = array( $msg ); // fills {0}
+
+			$handler = $this->BuildDataArray( $msg , $to );
+
+			if( $PatternId ){
+
 				$handler[ 'bodyId' ] = $PatternId ;
 
-			return  $client->SendByBaseNumber( $handler )->SendByBaseNumberResult;
+				return $client->SendSimpleSMS( $handler )->SendSimpleSMSResult;
+
+			} else return $client->SendSimpleSMS( $handler )->SendSimpleSMSResult;
 
 		} catch (SoapFault $ex) { return $ex->faultstring; }
 

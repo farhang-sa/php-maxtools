@@ -17,7 +17,19 @@ abstract class FardaPayamakBase extends SMS {
     public function GetSOAPUrl(){ 
     	return 'http://ippanel.com/class/sms/wsdlservice/server.php?wsdl'; }
 
-	protected function BuildDataArray( $msg , $to ){
+	protected function BuildDataArray( $msg , $to , $PatternId = null ){
+
+		if( $PatternId && is_array( $msg ) ) 
+			return array(
+				'user'     => $this->UserName() ,
+				'pass'     => $this->PassWord() ,
+				'fromNum'  => $this->FromNumb() ,
+				'toNum'    => $to ,
+				"patternCode" => '' . $PatternId ,
+				"inputData" => 	[ json_encode( $msg ) ] ,
+				'op' => 'pattern' 
+			);
+
 		return array (
 			'uname'     => $this->UserName() ,
 			'pass'      => $this->PassWord() ,
@@ -26,6 +38,7 @@ abstract class FardaPayamakBase extends SMS {
 			'to' 		=> json_encode( [ $to ] ),
 			'op' 		=>'send'
 		);
+
 	}
 
 	public function SendWithRESTCurl( $msg , $to , $PatternId = null ){
@@ -53,34 +66,40 @@ abstract class FardaPayamakBase extends SMS {
 
 	public function SendWithRESTGet( $msg , $to , $PatternId = null ) {
 
-		$handler = array(
-			'uname' 	=> $this->UserName() ,
-		    'pass' 		=> $this->PassWord() ,
-		    'from' 	   	=> $this->FromNumb() ,
-		    'to'		=> $to ,
-		    'msg'		=> $msg 
-		);
-		
+		$handler = $this->BuildDataArray( $msg , $to );
+		$handler[ 'to' ] = $to ; // override $to!
 		$handler = $this->GetRESTUrlGET() . '?' . http_build_query( $handler ) ;
 
 		return @file_get_contents( $handler ) ;
 
 	}
 
+	/** 
+	 * 
+	 * $msg for patterns :
+	 * must be array -> [ 'pattern_var1' => 'value1' , 'pattern_var2' => 'value2' ]
+	 * 
+ 	 **/
 	public function SendWithSOAP( $msg , $to , $PatternId = null ){
 
 		$client = $this->BuildSoapClient();
 
 		try {
+			
 			$user 		= $this->UserName() ;
 		    $pass 		= $this->PassWord() ;
 		    $fromNum 	= $this->FromNumb() ;
 		    $toNum 		= array( $to );
-		    $messageContent = $msg ;
-			$op  		= "send";
+			$op  		= 'send' ;
+			
 			//If you want to send in the future  ==> $time = '2016-07-30' //$time = '2016-07-30 12:50:50'
 			$time = '';
-			return  $client->SendSMS( $fromNum, $toNum, $messageContent, $user, $pass, $time, $op );
+			if( $PatternId && is_array( $msg ) )
+
+				return $client->sendPatternSms( $fromNum, $toNum, $user, $pass, $PatternId, $msg);
+
+			else return $client->SendSMS( $fromNum, $toNum, $msg, $user, $pass, $time, $op );
+
 		} catch (SoapFault $ex) { return $ex->faultstring; }
 
 	}

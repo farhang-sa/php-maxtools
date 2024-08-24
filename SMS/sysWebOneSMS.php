@@ -8,6 +8,7 @@ abstract class WebOneSMSBase extends SMS {
 	protected abstract function PassWord();
 	protected abstract function FromNumb();
 
+	// https://rest.payamakapi.ir/api/v1/SMS/Send
     public function GetRESTUrlPost(){ 
     	return 'http://webone-sms.ir/SMSInOutBox/Send'; }
 
@@ -71,14 +72,17 @@ abstract class WebOneSMSBase extends SMS {
 		$client = $this->BuildSoapClient();
 
 		try {
-			$handler['userName'] = $this->UserName() ;
-			$handler['password'] = $this->PassWord() ;
-			$handler['fromNumber'] = $this->FromNumb() ;
-			$handler['toNumbers'] = array( $to );
-			$handler['messageContent'] = $msg ;
-			$handler['isFlash'] = false;
-			$recId = array();
-			$status = array();
+
+			$handler = array(
+				'userName' => $this->UserName()  ,
+				'password' => $this->PassWord()  ,
+				'fromNumber' => $this->FromNumb()  ,
+				'toNumbers' => array( $to ) ,
+				'messageContent' => $msg  ,
+				'isFlash' => false 
+			);
+			$recId = array(0);
+			$status = 0x0;
 			$handler['recId'] = &$recId ;
 			$handler['status'] = &$status ;
 			return $client->SendSMS( $handler )->SendSMSResult;
