@@ -12,7 +12,7 @@ if( ! interface_exists( 'MaxPayment\Payment' ) )
 if( ! class_exists( 'MaxSMS\SMS' ) )
 	include_once 'SMS/SMS.php' ;
 
-if( ! function_exists( 'MaxTools\_DS' ) )
-	include_once 'Utilities/Functions.php' ;
+if( ! class_exists( 'MaxTools\Secrets' ) )
+	include_once 'Utilities/Utilities.php' ;
 
 ?>
