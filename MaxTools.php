@@ -4,7 +4,7 @@ if( ! class_exists( 'MaxCrypt\AESCrypt' ) )
 	include_once 'Crypt/AESCrypt.php' ;
 
 if( ! class_exists( 'MaxDatabaseManager\Server' ) )
-	include_once 'DbManager/Server.php' ;
+	include_once 'DBManager/Server.php' ;
 
 if( ! interface_exists( 'MaxPayment\Payment' ) )
 	include_once 'Payment/Payment.php' ;

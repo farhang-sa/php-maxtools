@@ -202,7 +202,7 @@ final class MysqlDriver implements SQLConnectorInterface {
 	
 	}
 
-	private final function queryObject( $results = null ) {
+	private function queryObject( $results = null ) {
 		
 		$this->Result = ( $results ) ? $results : $this->Result ;
 
