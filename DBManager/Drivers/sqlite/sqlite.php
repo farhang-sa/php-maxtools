@@ -1,4 +1,4 @@
-<?php
+<?php use MaxDatabaseManager ;
 
 defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
