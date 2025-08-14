@@ -1,4 +1,11 @@
 
 .git
+
+*.zip
+*.exe
+*.cmd
+*.mp3
+*.mp4
+
 test/
-test.php
+index.php
