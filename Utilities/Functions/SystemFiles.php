@@ -1,6 +1,5 @@
 <?php namespace MaxTools ;
 
-
 // Copy All Files from $src folder to $dst folder
 function Copy( $src , $dst ) { 
 

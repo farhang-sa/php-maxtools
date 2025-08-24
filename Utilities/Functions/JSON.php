@@ -1,4 +1,4 @@
-<?php
+<?php namespace MaxTools ;
 
 // get json decoded to array
 function json_str_to_array( $str ){
