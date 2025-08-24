@@ -75,7 +75,7 @@ abstract class SMS {
 
     protected function BuildSoapClient(){
         
-        ini_set("soap.wsdl_cache_enabled", "0");
+        ini_set('soap.wsdl_cache_enabled', '0');
         
         return new SoapClient( $this->GetSOAPUrl() , array( 'encoding' => 'UTF-8' ) );
 
@@ -83,8 +83,9 @@ abstract class SMS {
 
 }
 
-include_once 'sysFardaPayamak.php' ;
-include_once 'sysMeliPayamak.php' ;
-include_once 'sysWebOneSMS.php' ;
+$dirPath = realpath( __DIR__ ) . DIRECTORY_SEPARATOR ;
+include_once $dirPath . 'sysFardaPayamak.php' ;
+include_once $dirPath . 'sysMeliPayamak.php' ;
+include_once $dirPath . 'sysWebOneSMS.php' ;
 
 ?>

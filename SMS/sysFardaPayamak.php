@@ -25,8 +25,8 @@ abstract class FardaPayamakBase extends SMS {
 				'pass'     => $this->PassWord() ,
 				'fromNum'  => $this->FromNumb() ,
 				'toNum'    => $to ,
-				"patternCode" => '' . $PatternId ,
-				"inputData" => 	[ json_encode( $msg ) ] ,
+				'patternCode' => '' . $PatternId ,
+				'inputData' => 	[ json_encode( $msg ) ] ,
 				'op' => 'pattern' 
 			);
 

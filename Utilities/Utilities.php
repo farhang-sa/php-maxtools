@@ -1,6 +1,7 @@
 <?php namespace MaxTools ;
 
-include_once 'Functions.php' ;
-include_once 'Secrets.php' ;
+$dirPath = realpath( __DIR__ ) . DIRECTORY_SEPARATOR ;
+include_once $dirPath . 'Secrets.php' ;
+include_once $dirPath . 'Functions.php' ;
 
 ?>

@@ -4,9 +4,9 @@ defined( 'MaxPaymentInit' ) or die( 'Access Denied' );
 
 abstract class ZarinPalBase implements Payment { 
 
-	protected $url_charge = "https://www.zarinpal.com/pg/StartPay/" ;
-	protected $url_verify = "https://api.zarinpal.com/pg/v4/payment/verify.json" ;
-	protected $url_send   = "https://api.zarinpal.com/pg/v4/payment/request.json" ;
+	protected $url_charge = 'https://www.zarinpal.com/pg/StartPay/' ;
+	protected $url_verify = 'https://api.zarinpal.com/pg/v4/payment/verify.json' ;
+	protected $url_send   = 'https://api.zarinpal.com/pg/v4/payment/request.json' ;
 	
 	protected abstract function getMid();
 	
@@ -16,8 +16,8 @@ abstract class ZarinPalBase implements Payment {
 
 	public function send( $amount , $redirect , $mobile = null, 
 			$factorNumber = null, $description = null){
-		$mobile = $mobile != null ? $mobile : "09017553442" ;
-		$description = $description != null ? $description : "Facture Checkout" ;
+		$mobile = $mobile != null ? $mobile : '09017553442' ;
+		$description = $description != null ? $description : 'Facture Checkout' ;
         
 		$curl = curl_init();
 
@@ -49,9 +49,9 @@ abstract class ZarinPalBase implements Payment {
 		curl_close($curl);
 
 		$response = json_decode( $response , true );
-		$data = $response[ "data" ];
+		$data = $response[ 'data' ];
 		
-		if( empty( $data ) && isset( $response["error"] ) )
+		if( empty( $data ) && isset( $response['error'] ) )
 			return -1 ;
 		return $data;
 
@@ -84,9 +84,9 @@ abstract class ZarinPalBase implements Payment {
 		curl_close($curl);
 		
 		$response = json_decode( $response , true );
-		$data = $response[ "data" ];
+		$data = $response[ 'data' ];
 		
-		if( empty( $data ) && isset( $response["error"] ) )
+		if( empty( $data ) && isset( $response['error'] ) )
 			return -1 ;
 
 		return $data ;

@@ -11,12 +11,12 @@ class Update extends Action {
 		/**
 		 * update("id=1 , name=farhang")	----------A 
 		 * update(["id=1 , name=farhang"])	----------B 
-		 * update(["id=1","name=farhang"])	----------C 
-		 * update(["id","1","name","farhang"])	------D 
-		 * update(["id"=>"1","name"=>"farhang"])	--E 
+		 * update(["id=1','name=farhang"])	----------C 
+		 * update(["id','1','name','farhang"])	------D 
+		 * update(["id"=>"1','name"=>"farhang"])	--E 
 		 * update(["id,1,name,farhang"])	----------F 
-		 * update("id","1","name","farhang")	------G 
-		 * update("id=1","name=farhang")	----------H 
+		 * update("id','1','name','farhang")	------G 
+		 * update("id=1','name=farhang")	----------H 
 		 * update("id,1,name,farhang")	--------------I
 		 */
 		
@@ -30,11 +30,11 @@ class Update extends Action {
 			
 			if ( is_string( $first ) ) {
 				
-				$exp = explode( "," , $first );
+				$exp = explode( ',' , $first );
 				
 				$hasAssign = eachHasChar( $exp , '=' );
 				
-				$hasComma = eachHasChar( $exp , "," );
+				$hasComma = eachHasChar( $exp , ',' );
 				
 				if ( $hasComma ) { // --I
 					
@@ -246,38 +246,27 @@ class Update extends Action {
 				
 				foreach( $colmnNames as $realName ) {
 					
-					if ( is_array( $realName ) ) {
-						
+					if ( is_array( $realName ) ) 
 						$this->{__FUNCTION__}( $realName );
 					
-					} else {
-						
+					else 
 						$this->deleteUpdatesHelper( $realName );
 					
-					}
-				
 				}
 			
-			} else {
-				
+			} else
 				$this->deleteUpdatesHelper( $colmnNames );
 			
-			}
-		
-		}
-		
-		return $this;
+		} return $this;
 	
 	}
 
 	protected function buildQuery( ) {
 
 		$cdb = $this->Database( );
-		
 		$ctb = $this->Table( );
 		
 		$tableValue = ( $cdb ) ? $cdb . '.' . $ctb : $ctb;
-		
 		$TheColumns = '' ;
 		
 		foreach( $this->UpdateList as $colName => $insValue ) {
@@ -288,27 +277,21 @@ class Update extends Action {
 				&& ( ! stristr( $insValue , '<' ) && ! stristr( $insValue , '>' ) ) ) {
 				
 				$insValue = str_ireplace( "'" , "\\'", $insValue ) ;
-				
 				$insValue = str_ireplace( '"' , '\\"', $insValue ) ;
-
 				$TheColumns .= " {$colName}={$insValue} ,";
 			
 			} else {
 				
 				$insValue = str_ireplace( "'" , "\\'", $insValue ) ;
-				
 				$insValue = str_ireplace( '"' , '\\"', $insValue ) ;
-				
 				$TheColumns .= " {$colName}='{$insValue}' ,";
 			
 			}
 		
 		} $TheColumns = substr( $TheColumns , 0 , - 1 );
-		
 		$TheColumns = ( string ) "{$TheColumns}";
 
 		$this->Limit .= ( strlen( $this->Offset ) ) ? ' ' . $this->Offset : '' ; 
-		
 		$this->Query = $this->Connector()->QueryDriver->update( $tableValue , $TheColumns , $this->Where , $this->Limit );
 
 	}

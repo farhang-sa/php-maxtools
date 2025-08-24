@@ -1,8 +1,5 @@
-<?php
+<?php defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
-defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
-
-final class MysqlQueryDriver extends StandardSQLDriver {
-}
+final class MysqlQueryDriver extends StandardSQLDriver {}
 
 ?>

@@ -104,11 +104,11 @@ class Insert extends Action {
 					
 					$arg = $first[0];
 					
-					$exp = explode( "," , $arg );
+					$exp = explode( ',' , $arg );
 					
 					$hasAssign = eachHasChar( $exp , '=' );
 					
-					$hasComma = eachHasChar( $exp , "," );
+					$hasComma = eachHasChar( $exp , ',' );
 					
 					if ( $hasAssign && $hasComma ) { // --C
 						

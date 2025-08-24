@@ -31,9 +31,9 @@ class Query {
 
 	public function exec( $q = null ) {
 
-		if ( ! $this->Connector()->isConnected( ) ) {
+		if ( ! $this->Connector()->isConnected() ) {
 			
-			$this->Error( $this->Connector()->error( ) );
+			$this->Error( $this->Connector()->error() );
 			
 			return false ;
 			
@@ -45,7 +45,7 @@ class Query {
 		
 		else $this->AcceptQuery( $QueryExec );
 		
-		$this->Error( $this->Connector()->Error( ) );
+		$this->Error( $this->Connector()->Error() );
 		
 		return $this;
 	
@@ -55,43 +55,45 @@ class Query {
 
 	protected function AcceptQuery( Query $q ) {
 
-		if ( $q->Server( ) ) 	$this->Server( 		$q->Server( ) );
+		if ( $q->Server() ) 	
+			$this->Server( $q->Server() );
+		if ( $q->Database() ) 	
+			$this->Database( $q->Database() );
+		if ( $q->Table() ) 	
+			$this->Table( $q->Table() );
+		if ( $q->Columns() ) 	
+			$this->Columns( $q->Columns() );
+		if ( $q->Query() ) 	
+			$this->Query( $q->Query() );
+		if ( $q->Effected() ) 	
+			$this->Effected( $q->Effected() );
+		if ( $q->Error() ) 	
+			$this->Error( $q->Error() );
+		if ( $q->Fields() ) 	
+			$this->Fields( $q->Fields() );
+		if ( $q->Inserts() ) 	
+			$this->Inserts( $q->Inserts() );
+		if ( $q->Rows() ) 		
+			$this->Rows( $q->Rows() );
+		if ( $q->Params() ) 	
+			$this->Params( $q->Params() );
 		
-		if ( $q->Database( ) ) 	$this->Database(	$q->Database( ) );
-			
-		if ( $q->Table( ) ) 	$this->Table( 		$q->Table( ) );
-			
-		if ( $q->Columns( ) ) 	$this->Columns( 	$q->Columns( ) );
-			
-		if ( $q->Query( ) ) 	$this->Query( 	$q->Query( ) );
-			
-		if ( $q->Effected( ) ) 	$this->Effected( 	$q->Effected( ) );
-		
-		if ( $q->Error( ) ) 	$this->Error( 		$q->Error( ) );
-		
-		if ( $q->Fields( ) ) 	$this->Fields( 		$q->Fields( ) );
-		
-		if ( $q->Inserts( ) ) 	$this->Inserts( 	$q->Inserts( ) );
-		
-		if ( $q->Rows( ) ) 		$this->Rows( 		$q->Rows( ) );
-		
-		if ( $q->Params( ) ) 	$this->Params( 		$q->Params( ) );
-		
-		$this->Result( $q->Result( ) );
+		$this->Result( $q->Result() );
 		
 	}
 
 	public function Query( $q = null ) {
 
-		if ( is_string( $q ) ) $this->Query = $q;
-		
-		else if ( $q instanceof Query ) $this->AcceptQuery( $q );
-		
-		else if ( $q instanceof Database ) $this->Database( $q );
-		
-		else if ( $q instanceof Table ) $this->Table( $q );
-		
-		else if ( $q instanceof Columns ) $this->Columns( $q );
+		if ( is_string( $q ) ) 
+			$this->Query = $q;
+		else if ( $q instanceof Query ) 
+			$this->AcceptQuery( $q );
+		else if ( $q instanceof Database ) 
+			$this->Database( $q );
+		else if ( $q instanceof Table ) 
+			$this->Table( $q );
+		else if ( $q instanceof Columns ) 
+			$this->Columns( $q );
 		
 		return ( $this->Query ) ? $this->Query : false;
 			
@@ -101,15 +103,16 @@ class Query {
 
 		if ( $Server ) {
 
-			if ( $Server instanceof Server ) $this->Server = $Server->Name( );
-			
-			else if ( $Server instanceof Database ) $this->Server = $Server->Server( )->Name();
-				
-			else if ( $Server instanceof Table ) $this->Server = $Server->Server( )->Name();
-				
-			else if ( $Server instanceof Columns ) $this->Server = $Server->Server( )->Name();
-				
-			else if ( is_string( $Server ) )$this->Server = $Server;
+			if ( $Server instanceof Server ) 
+				$this->Server = $Server->Name();
+			else if ( $Server instanceof Database ) 
+				$this->Server = $Server->Server()->Name();
+			else if ( $Server instanceof Table ) 
+				$this->Server = $Server->Server()->Name();
+			else if ( $Server instanceof Columns ) 
+				$this->Server = $Server->Server()->Name();
+			else if ( is_string( $Server ) )
+				$this->Server = $Server;
 			
 		} return ( $this->Server )? $this->Server : false;
 			
@@ -119,13 +122,13 @@ class Query {
 
 		if ( $database ) {
 			
-			if ( is_string( $database ) ) $this->Database = $database;
-			
+			if ( is_string( $database ) ) 
+				$this->Database = $database;
+
 			else if ( $database instanceof Database ) {
 				
-				if ( $database->Server( ) ) 
-
-					$this->Server( $database->Server( )->Name() );
+				if ( $database->Server() ) 
+					$this->Server( $database->Server()->Name() );
 				
 				$this->Database = $database->Name();
 			
@@ -139,13 +142,16 @@ class Query {
 
 		if ( $table ) {
 			
-			if ( is_string( $table ) ) $this->Table = $table;
+			if ( is_string( $table ) ) 
+				$this->Table = $table;
 			
 			else if ( $table instanceof Table ) {
 				
-				if ( $table->Server( ) ) $this->Server( $table->Server( )->Name() );
+				if ( $table->Server() ) 
+					$this->Server( $table->Server()->Name() );
 				
-				if ( $table->Database( ) ) $this->Database( $table->Database( )->Name() );
+				if ( $table->Database() ) 
+					$this->Database( $table->Database()->Name() );
 				
 				$this->Table = $table->Name();
 			
@@ -165,21 +171,27 @@ class Query {
 				
 				$column = new Columns( $column );
 				
-				if ( $this->Database ) $column->Database( $this->Database );
+				if ( $this->Database ) 
+					$column->Database( $this->Database );
 				
-				if ( $this->Table ) $column->Table( $this->Table );
+				if ( $this->Table ) 
+					$column->Table( $this->Table );
 				
-				if ( $this->Server ) $column->Server( $this->Server );
+				if ( $this->Server ) 
+					$column->Server( $this->Server );
 				
 				$this->Columns = $column;
 			
 			} else if ( $column instanceof Columns ) {
 				
-				if ( $column->Server( ) ) $this->Server( $column->Server( )->Name() );
+				if ( $column->Server() ) 
+					$this->Server( $column->Server()->Name() );
 				
-				if ( $column->Database( ) ) $this->Database( $column->Database( )->Name() );
+				if ( $column->Database() ) 
+					$this->Database( $column->Database()->Name() );
 				
-				if ( $column->Table( ) ) $this->Table( $column->Table( )->Name() );
+				if ( $column->Table() ) 
+					$this->Table( $column->Table()->Name() );
 				
 				$this->Columns = $column;
 			
@@ -194,7 +206,6 @@ class Query {
 		if ( $EffectedCount ) {
 			
 			$this->Effected = $EffectedCount;
-			
 			return true;
 		
 		} return ( $this->Effected ) ? $this->Effected : false;
@@ -205,14 +216,12 @@ class Query {
 
 		if ( $ErrorNO && $Error ) {
 			
-			$this->Error = ( $ErrorNO . " : " . $Error );
-			
+			$this->Error = ( $ErrorNO . ' -> ' . $Error );
 			return true;
 		
 		} else if ( is_array( $ErrorNO ) ) {
 			
-			$this->Error = ( $ErrorNO[0] . " : " . $ErrorNO[1] );
-			
+			$this->Error = ( $ErrorNO[0] . ' -> ' . $ErrorNO[1] );
 			return true;
 		
 		} else if ( is_string( $ErrorNO ) ) $this->Error = $ErrorNO;
@@ -227,7 +236,6 @@ class Query {
 		if ( $Fields ) {
 			
 			$this->Fields = $Fields;
-			
 			return true;
 		
 		} return ( $this->Fields ) ? $this->Fields : false;
@@ -239,7 +247,6 @@ class Query {
 		if ( $insertID ) {
 			
 			$this->Inserts = $insertID;
-			
 			return true;
 		
 		} return ( $this->Inserts ) ? $this->Inserts : false;
@@ -251,7 +258,6 @@ class Query {
 		if ( $Rows ) {
 			
 			$this->Rows = $Rows;
-			
 			return true;
 		
 		} return ( $this->Rows ) ? $this->Rows : false;
@@ -263,7 +269,6 @@ class Query {
 		if ( $params ) {
 			
 			$this->Params = $params;
-			
 			return true;
 		
 		} return ( $this->Params ) ? $this->Params : false;
@@ -277,7 +282,6 @@ class Query {
 			if ( is_array( $result ) ) {
 
 				$this->Result = new Result() ;
-
 				$this->Result->Result( $result ) ;
 			
 			} else $this->Result = $result ;

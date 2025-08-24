@@ -4,13 +4,13 @@ defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
 abstract class Action extends Query {
 
-	protected $Where = "";
+	protected $Where = '';
 
-	protected $Limit = "";
+	protected $Limit = '';
 
-	protected $Offset = "";
+	protected $Offset = '';
 	
-	protected $Order = "" ;
+	protected $Order = '' ;
 
 	public function where( ) {
 
@@ -48,11 +48,11 @@ abstract class Action extends Query {
 			
 			if ( is_string( $first ) ){
 
-				if ( stristr( $first , "SELECT" ) !== false && stristr( $first , "FROM" ) !== false ) {
+				if ( stristr( $first , 'SELECT' ) !== false && stristr( $first , 'FROM' ) !== false ) {
 
 					$this->Where .= " AND {$first}" ;
 
-				} else $this->Where .= " AND " . str_replace( " , " , " AND " , $first ) ;
+				} else $this->Where .= ' AND ' . str_replace( ' , ' , ' AND ' , $first ) ;
 
 			} else if ( is_array( $first ) ) {
 				
@@ -67,7 +67,7 @@ abstract class Action extends Query {
 					
 					foreach( $first as $k => $v ) {
 
-						$v20 = str_replace( " " , "" , $v );
+						$v20 = str_replace( ' ' , '' , $v );
 
 						if ( is_string( $k ) ) {
 
@@ -98,7 +98,7 @@ abstract class Action extends Query {
 
 				} else if ( $hasAssign ) foreach( $first as $v ) {
 
-					$v20 = str_replace( " " , "" , $v );
+					$v20 = str_replace( ' ' , '' , $v );
 
 					if ( stristr( $v , "SELECT" ) !== false && 
 								stristr( $v , "FROM" ) !== false ) {
@@ -153,7 +153,7 @@ abstract class Action extends Query {
 			
 			if ( $hasAssgin ) foreach( $args as $v ) {
 
-				$v20 = str_replace( " " , "" , $v );
+				$v20 = str_replace( ' ' , '' , $v );
 				
 				if ( stristr( $v , "SELECT" ) !== false && 
 							stristr( $v , "FROM" ) !== false ) {
@@ -205,9 +205,15 @@ abstract class Action extends Query {
 	
 	}
 
+	public function setLimit( $limit = null ){
+		$this->limit( $limit );
+		return $this ;
+	}
+
 	public function limit( $limit = null ) {
 
-		if ( $limit !== null ) $this->Limit = 'LIMIT ' . ( int ) $limit;
+		if ( $limit !== null ) 
+			$this->Limit = 'LIMIT ' . ( int ) $limit;
 
 		$this->Limit = trim( $this->Limit , " /\\" );
 		
@@ -215,9 +221,15 @@ abstract class Action extends Query {
 	
 	}
 
+	public function setOffset( $offset = null ){
+		$this->offset( $offset );
+		return $this ;
+	}
+
 	public function offset( $offset = null ) {
 
-		if ( $offset !== null ) $this->Offset = 'OFFSET ' . ( int ) $offset;
+		if ( $offset !== null ) 
+			$this->Offset = 'OFFSET ' . ( int ) $offset;
 
 		$this->Offset = trim( $this->Offset , " /\\" );
 		
@@ -225,7 +237,12 @@ abstract class Action extends Query {
 	
 	}
 
-	public function order( $colName = null , $sort = "asc" ){
+	public function setOrder( $colName = null , $sort = 'asc' ){
+		$this->order( $colName , $sort );
+		return $this ;
+	}
+
+	public function order( $colName = null , $sort = 'asc' ){
 		
 		if ( $colName ) {
 			
@@ -249,13 +266,11 @@ abstract class Action extends Query {
 
 	public function exec( $q = null ) {
 
-		if ( method_exists( $this , "buildQuery" ) ) $this->buildQuery( );
-		
-		$this->Query = str_ireplace( "   " , " " , $this->Query );
-		
-		$this->Query = str_ireplace( "  " , " " , $this->Query );
-		
-		$this->Query = str_ireplace( "  " , " " , $this->Query );
+		if ( method_exists( $this , 'buildQuery' ) ) 
+			$this->buildQuery( );
+
+		while( stristr( $this->Query , '  ' ) !== false )
+			$this->Query = str_ireplace( '  ' , ' ' , $this->Query );
 		
 		$this->Query = ( string ) $this->Query;
 

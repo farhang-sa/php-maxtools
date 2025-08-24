@@ -9,15 +9,15 @@ class Select extends Action {
 	public function select( ) {
 
 		/**
-		 * select("*"); select(["*"]);
-		 * select(["id","name","last","nick"])	------A
+		 * select('*'); select(['*']);
+		 * select(['id','name','last','nick'])	------A
 		 * select(["id"])	--------------------------B
 		 * select(["id , name , last , nick"])	------C
-		 * select(["id , name" , "last , nick"])	--D
-		 * select("id","name","last","nick")	------E
+		 * select(["id , name' , 'last , nick"])	--D
+		 * select('id','name','last','nick')	------E
 		 * select("id")	------------------------------F
 		 * select("id , name , last , nick ")	------G
-		 * select("id , name" , "last , nick")	------H
+		 * select("id , name' , 'last , nick")	------H
 		 */
 		$args = func_get_args( );
 		
@@ -31,11 +31,11 @@ class Select extends Action {
 
 				$exp = array() ;
 
-				if ( stristr( $first , ")" ) !== false ) {
+				if ( stristr( $first , ')' ) !== false ) {
 
 					$exp[ ] = $first ;
 
-				} else $exp = explode( "," , $first );
+				} else $exp = explode( ',' , $first );
 				
 				if ( count( $exp ) == 1 ) { // --F
 					
@@ -67,11 +67,11 @@ class Select extends Action {
 					
 					} $exp = array() ;
 
-					if ( stristr( $first[0] , ")" ) !== false ) {
+					if ( stristr( $first[0] , ')' ) !== false ) {
 
 						$exp = $first ;
 
-					} else $exp = explode( "," , $first[0] );
+					} else $exp = explode( ',' , $first[0] );
 
 					if ( count( $exp ) == 1 ) { // --B
 					
@@ -91,17 +91,17 @@ class Select extends Action {
 				
 				} else {
 					
-					$hasComma = eachHasChar( $first , "," );
+					$hasComma = eachHasChar( $first , ',' );
 					
-					$hasPO = eachHasChar( $first , "(" );
+					$hasPO = eachHasChar( $first , '(' );
 					
-					$hasPE = eachHasChar( $first , ")" );
+					$hasPE = eachHasChar( $first , ')' );
 
 					if ( $hasComma && ! ( $hasPO && $hasPE ) ) { // --D
 						
 						foreach( $first as $k => $v ) {
 							
-							$exp = explode( "," , $v );
+							$exp = explode( ',' , $v );
 							
 							foreach( $exp as $k2 => $v2 ) {
 								
@@ -143,13 +143,13 @@ class Select extends Action {
 				}
 			} if ( $akaArray == true ) { return $this; }
 			
-			$hasComma = eachHasChar( $args , "," );
+			$hasComma = eachHasChar( $args , ',' );
 			
 			if ( $hasComma ) { // --D----
 				
 				foreach( $args as $k => $v ) {
 					
-					$exp = explode( "," , $v );
+					$exp = explode( ',' , $v );
 					
 					foreach( $exp as $k2 => $v2 ) {
 						
@@ -189,15 +189,17 @@ class Select extends Action {
 				
 				foreach( $colmnNames as $realName ) {
 					
-					if ( is_array( $realName ) ) {
+					if ( is_array( $realName ) ) 
 						
 						$this->{__FUNCTION__}( $realName );
 					
-					} else { $this->deleteUpdatesHelper( $realName ); }
+					else 
+						$this->deleteUpdatesHelper( $realName );
 				
 				}
 			
-			} else { $this->deleteUpdatesHelper( $colmnNames ); }
+			} else 
+				$this->deleteUpdatesHelper( $colmnNames );
 		
 		} return $this;
 	
@@ -206,7 +208,6 @@ class Select extends Action {
 	public function getQuery( ){
 
 		$this->buildQuery();
-		
 		return $this->Query ;
 
 	}
@@ -214,18 +215,17 @@ class Select extends Action {
 	protected function buildQuery( ) {
 
 		$cdb = $this->Database( );
-		
 		$ctb = $this->Table( );
 
 		if ( empty( $this->SelectList ) ) return $this ;
 
-		$tableValue = ( $cdb ) ? $cdb . "." . $ctb : $ctb ;
+		$tableValue = ( $cdb ) ? $cdb . '.' . $ctb : $ctb ;
 		
-		$TheColumns = "";
+		$TheColumns = '';
 
 		foreach( $this->SelectList as $colName => $AsName ) {
 			
-			if ( ! stristr( $colName , "(" ) && ! stristr( $colName , ")" ) ) {
+			if ( ! stristr( $colName , '(' ) && ! stristr( $colName , ')' ) ) {
 				
 				$TheColumns .=  "{$tableValue}.{$colName}";
 			
@@ -233,21 +233,21 @@ class Select extends Action {
 
 				$TheColumns .= " {$colName}";
 			
-			} if ( ! stristr( $TheColumns , "as" ) ) {
+			} if ( ! stristr( $TheColumns , 'as' ) ) {
 
 				$TheColumns .= " as `$AsName` , ";
 
-			} $TheColumns = trim( $TheColumns , "/\\ , " ) . " , " ;
+			} $TheColumns = trim( $TheColumns , "/\\ , " ) . ' , ' ;
 
-			if ( strstr( $colName , "*" ) ) { $TheColumns = "*"; break; }
+			if ( strstr( $colName , '*' ) ) { 
+				$TheColumns = '*'; break; }
 		
-		} if ( strstr( $TheColumns , "*" ) === false ) 
+		} if ( strstr( $TheColumns , '*' ) === false ) 
 
 			$TheColumns = substr( $TheColumns , 0 , -3 );
 
-		$this->Where .= ( strlen( $this->Order ) ) ? " " . $this->Order : "" ;
-		
-		$this->Limit .= ( strlen( $this->Offset ) ) ? " " . $this->Offset : "" ; 
+		$this->Where .= ( strlen( $this->Order ) ) ? ' ' . $this->Order : '' ;
+		$this->Limit .= ( strlen( $this->Offset ) ) ? ' ' . $this->Offset : '' ; 
 		
 		$this->Query = $this->Connector()->QueryDriver->select( 
 			$tableValue , $TheColumns , $this->Where , $this->Limit );
@@ -259,23 +259,13 @@ class Select extends Action {
 	protected function deleteSelectsHelper() {
 
 		$args = func_get_args( );
-		
 		$newList = array ();
 		
-		foreach( $args as $colmnName ) {
-			
-			foreach( $this->SelectList as $key => $value ) {
-				
-				if ( strtolower( $colmnName ) != strtolower( $key ) ) {
-					
+		foreach( $args as $colmnName )
+			foreach( $this->SelectList as $key => $value ) 
+				if ( strtolower( $colmnName ) != strtolower( $key ) ) 
 					$newList[$key] = $value;
-				
-				}
 			
-			}
-		
-		}
-		
 		$this->SelectList = $newList;
 	
 	}

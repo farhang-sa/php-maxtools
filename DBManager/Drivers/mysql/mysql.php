@@ -3,7 +3,7 @@
 #[AllowDynamicProperties]
 final class MysqlDriver implements SQLConnectorInterface {
 
-	public $SystemName = "mysql";
+	public $SystemName = 'mysql';
 
 	private $addr = null;
 
@@ -51,7 +51,7 @@ final class MysqlDriver implements SQLConnectorInterface {
 		
 		if ( $this->link === false ) {
 			
-			$this->error( "Connection Error, Please Check Your Username And Password Access !" );
+			$this->error( 'Connection error, please check your credentials!' );
 			
 			$this->hasError = true;
 			
@@ -71,13 +71,13 @@ final class MysqlDriver implements SQLConnectorInterface {
 				
 				$this->hasError = true;
 				
-				$this->error( "Database Error, Cannot Change Database To '{$db}' !" );
+				$this->error( "Database error, cannot change database to '{$db}' !" );
 				
 				return false;
 			
 			} else {
 				
-				$QueryDriverClassName = $this->SystemName . "QueryDriver";
+				$QueryDriverClassName = $this->SystemName . 'QueryDriver';
 				
 				$this->QueryDriver = new $QueryDriverClassName( );
 				
@@ -91,7 +91,7 @@ final class MysqlDriver implements SQLConnectorInterface {
 	
 	}
 
-	public function setCharset( $Charset = "utf8mb4" ){ 
+	public function setCharset( $Charset = 'utf8mb4' ){ 
 
 		$this->query("SET NAMES '{$Charset}' COLLATE 'utf8mb4'" );
 		$this->set_charset( $Charset ); 
@@ -104,7 +104,7 @@ final class MysqlDriver implements SQLConnectorInterface {
 
 		if ( @mysql_ping( $this->link ) ) {
 			
-			$this->error( "" );
+			$this->error( '' );
 			
 			$this->hasError = false;
 			
@@ -114,7 +114,7 @@ final class MysqlDriver implements SQLConnectorInterface {
 			
 			if ( @mysql_errno( $this->link ) ) {
 				
-				$this->error( @mysql_errno( $this->link ) . " : " . @mysql_error( $this->link ) );
+				$this->error( @mysql_errno( $this->link ) . ' -> ' . @mysql_error( $this->link ) );
 			
 			}
 			
@@ -138,7 +138,7 @@ final class MysqlDriver implements SQLConnectorInterface {
 		
 		else if ( $Resualt == false ) $this->hasError = true;
 		
-		$this->error( @mysql_errno( $this->link ) . " : " . @mysql_error( $this->link ) );
+		$this->error( @mysql_errno( $this->link ) . ' -> ' . @mysql_error( $this->link ) );
 			
 		return $Resualt ;
 	

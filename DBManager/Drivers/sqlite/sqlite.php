@@ -3,7 +3,7 @@
 #[AllowDynamicProperties]
 final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 
-	public $SystemName = "sqlite";
+	public $SystemName = 'sqlite' ;
 
 	private $file = null;
 
@@ -35,7 +35,7 @@ final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 		
 		if ( $Connection === false ) {
 			
-			$this->error( "Connection Error : Please Check Your Username And Password Access !" );
+			$this->error( 'Connection error, please check your credentials!' );
 			
 			$this->hasError = true;
 			
@@ -53,7 +53,7 @@ final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 				
 				$this->hasError = true;
 				
-				$this->error( "Database Error : Cannot Change Database To '{$db}' !" );
+				$this->error( "Database error, cannot change database to '{$db}' !" );
 				
 				return false;
 				
@@ -77,7 +77,7 @@ final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 
 		if ( file_exists( $this->file ) ) {
 			
-			$this->error( "" );
+			$this->error( '' );
 			
 			$this->hasError = false;
 			
@@ -85,7 +85,7 @@ final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 		
 		} else {
 			
-			$this->error( "Database Error : Sqlite Database File Not Exists ." );
+			$this->error( 'Database error -> Sqlite database file does not exist.' );
 			
 			$this->hasError = true;
 			
@@ -110,7 +110,7 @@ final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 		
 		else if ( $Resualt == false ) $this->hasError = true;
 		
-		$this->error( $this->lastErrorCode( ) . " : " . $this->lastErrorMsg( ) );
+		$this->error( $this->lastErrorCode( ) . ' -> ' . $this->lastErrorMsg( ) );
 			
 		return $Resualt;
 	
@@ -196,7 +196,7 @@ final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 		
 		while( $cArray = $this->Result->fetchArray( SQLITE3_ASSOC ) ) $results[] = $cArray;
 			
-		if ( stristr( $this->Query , "PRAGMA TABLE_INFO" ) ) {
+		if ( stristr( $this->Query , 'PRAGMA TABLE_INFO' ) ) {
 					
 			$newArray = array ();
 					

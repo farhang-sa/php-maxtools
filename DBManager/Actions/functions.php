@@ -2,12 +2,12 @@
 
 defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
-function getColumnName( $colNameWithPeoperty = "" ) {
+function getColumnName( $colNameWithPeoperty = '' ) {
 
 	if ( $colNameWithPeoperty ) {
 		
-		return ( strstr( $colNameWithPeoperty , " " ) ) ? 
-			explode( " " , $colNameWithPeoperty , 2 )[0] : false;
+		return ( strstr( $colNameWithPeoperty , ' ' ) ) ? 
+			explode( ' ' , $colNameWithPeoperty , 2 )[0] : false;
 	
 	} else return false;
 
@@ -33,7 +33,7 @@ function hasProperty( array $theArray ) {
 	
 	foreach( $theArray as $v ) {
 		
-		$hasProperty = ( strstr( $v , "(" ) && strstr( $v , "(" ) ) ? true : false;
+		$hasProperty = ( strstr( $v , '(' ) && strstr( $v , '(' ) ) ? true : false;
 		
 		if ( $hasProperty == false ) {
 			
@@ -45,7 +45,7 @@ function hasProperty( array $theArray ) {
 
 }
 
-function eachHasChar( array $theArray , $char = " " ) {
+function eachHasChar( array $theArray , $char = ' ' ) {
 
 	$eachHasChar = true;
 	
@@ -59,7 +59,7 @@ function eachHasChar( array $theArray , $char = " " ) {
 
 }
 
-function thisHasChar( $theString , $char = " " ) {
+function thisHasChar( $theString , $char = ' ' ) {
 
 	if ( stristr( $theString , $char ) !== false ) return true;
 	

@@ -3,7 +3,7 @@
 #[AllowDynamicProperties]
 final class MySqliDriver extends mysqli implements SQLDriverInterface {
 
-	public $InterfaceName = "Mysqli";
+	public $InterfaceName = 'Mysqli';
 
 	private $addr = null;
 
@@ -47,7 +47,7 @@ final class MySqliDriver extends mysqli implements SQLDriverInterface {
 		
 		if ( $Connection === false ) {
 			
-			$this->error( "Connection Error, Please Check Your Username And Password Access !" );
+			$this->error( 'Connection error, please check your credentials!' );
 			
 			$this->hasError = true;
 			
@@ -67,7 +67,7 @@ final class MySqliDriver extends mysqli implements SQLDriverInterface {
 				
 				$this->hasError = true;
 				
-				$this->error( "Database Error, Cannot Change Database To '{$db}' !" );
+				$this->error( "Database error, cannot change database to '{$db}' !" );
 				
 				return false;
 			
@@ -98,9 +98,9 @@ final class MySqliDriver extends mysqli implements SQLDriverInterface {
 
 	public function isConnected( ) {
 
-		if ( @$this->ping( ) ) {
+		if ( @$this->ping() ) {
 			
-			$this->error( "" );
+			$this->error( '' );
 			
 			$this->hasError = false;
 			
@@ -110,11 +110,11 @@ final class MySqliDriver extends mysqli implements SQLDriverInterface {
 			
 			if ( $this->connect_errno ) {
 				
-				$this->error( $this->connect_errno . " : " . $this->connect_error );
+				$this->error( $this->connect_errno . ' -> ' . $this->connect_error );
 			
 			} else if ( @$this->errno ) {
 				
-				$this->error( @$this->errno . " : " . @$this->error );
+				$this->error( @$this->errno . ' -> ' . @$this->error );
 			
 			}
 			
@@ -139,7 +139,7 @@ final class MySqliDriver extends mysqli implements SQLDriverInterface {
 		
 		else if ( $Resualt == false ) $this->hasError = true;
 		
-		$this->error( $this->errno . " : " . $this->error );
+		$this->error( $this->errno . ' -> ' . $this->error );
 			
 		return $Resualt;
 	

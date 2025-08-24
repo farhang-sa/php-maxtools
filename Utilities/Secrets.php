@@ -21,7 +21,7 @@ abstract class Secrets {
 		if( strlen( $name ) <= 4 )
 			return null ;
 
-		if( strtowloer( substr( $name , 0 , 3 ) ) === 'get' )
+		if( strtolower( substr( $name , 0 , 3 ) ) === 'get' )
 			$name = substr( $name , 3 ) ;
 		
 		if( isset( $Secrets[ $name ] ) )

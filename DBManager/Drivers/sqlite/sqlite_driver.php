@@ -1,6 +1,4 @@
-<?php
-
-defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
+<?php defined( 'MaxDatabaseManagerExec' ) or die( 'Access Denied' );
 
 final class SqliteQueryDriver extends StandardSQLDriver {
 

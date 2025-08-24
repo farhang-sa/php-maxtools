@@ -13,8 +13,9 @@ interface Payment {
 
 }
 
-include_once 'sysNextPay.php' ;
-include_once 'sysPayDotIR.php' ;
-include_once 'sysZarinPal.php' ;
+$dirPath = realpath( __DIR__ ) . DIRECTORY_SEPARATOR ;
+include_once $dirPath . 'sysNextPay.php' ;
+include_once $dirPath . 'sysPayDotIR.php' ;
+include_once $dirPath . 'sysZarinPal.php' ;
 
 ?>

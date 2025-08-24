@@ -22,9 +22,9 @@ class Result {
 			
 			$this->results = $ASSOCC_RESULTS;
 			
-			$this->findDepth( );
+			$this->findDepth();
 			
-			$this->QuerySelector( );
+			$this->QuerySelector();
 		
 		} return $this->getData( 0 );
 		
@@ -38,17 +38,16 @@ class Result {
 			
 			$this->depth = $this->depth + 1 ;
 			
-			if ( isset( $TheDepthValue[0] ) ) {
-				
+			if ( isset( $TheDepthValue[0] ) ) 
 				$this->findDepth( $TheDepthValue[0] );
 			
-			} else { return null ; }
+			else { return null ; }
 		
 		} else { return null ; }
 	
 	}
 
-	protected function QuerySelector( ) {
+	protected function QuerySelector() {
 
 		$TheQueryValue = $this->results;
 		
@@ -57,17 +56,13 @@ class Result {
 			if ( $this->depth >= 3 ) {
 				
 				$this->QueryCount = count( $TheQueryValue );
-				
 				$this->Rows = count( $TheQueryValue[0] ) - 1;
-				
 				$this->Query = $TheQueryValue[0];
 			
 			} else {
 				
 				$this->QueryCount = 1;
-				
 				$this->Rows = count( $TheQueryValue ) - 1;
-				
 				$this->Query = $TheQueryValue;
 			
 			}
@@ -75,38 +70,37 @@ class Result {
 		} else {
 			
 			$this->QueryCount = 1;
-			
 			$this->Rows = 1;
-			
 			$this->Query = $TheQueryValue;
 		
 		}
 	
 	}
 
-	public function GetQuery( $Qnumber = null ) { return $this->QueryResults( $Qnumber ); }
+	public function GetQuery( $Qnumber = null ) { 
+		return $this->QueryResults( $Qnumber ); }
 
 	public function QueryResults( $Qnumber = null ) {
 
 		if ( $Qnumber ) {
 			
-			if ( $Qnumber <= $this->QueryCount && $this->depth >= 3 ) {
-				
+			if ( $Qnumber <= $this->QueryCount && $this->depth >= 3 ) 
 				$this->Query = $this->results[$Qnumber];
-			
-			}
 		
 		} else {
 			
-			if ( $this->Query ) { return $this->Query; }
+			if ( $this->Query ) 
+				return $this->Query;
 
-			else { return false; }
+			else 
+				return false;
 		
 		}
 	
 	}
 
-	public final function Last() { return $this->Rows; }
+	public final function Last() { 
+		return $this->Rows; }
 
 	public final function getData( $rowNumber = null ) {
 	
@@ -115,10 +109,9 @@ class Result {
 			if ( $this->Query && $this->Rows >= $rowNumber ) {
 				
 				if ( is_array( $this->Query ) ) 
-
-				return $this->Query[$rowNumber];
+					return $this->Query[$rowNumber];
 			
-			} else { return false; }
+			} else return false;
 		
 		} else {
 			
@@ -127,13 +120,11 @@ class Result {
 			if ( $row > $this->Rows ) {
 				
 				$this->cRow = 0;
-				
 				return false;
 			
 			} else {
 				
 				$this->cRow = $this->cRow + 1;
-
 				return $this->getData( $row );
 			
 			}

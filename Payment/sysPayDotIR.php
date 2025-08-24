@@ -4,9 +4,9 @@ defined( 'MaxPaymentInit' ) or die( 'Access Denied' );
 
 abstract class PayDotIRBase implements Payment { 
 
-	protected $url_charge = "https://pay.ir/pg" ;
-	protected $url_verify = "https://pay.ir/pg/verify" ;
-	protected $url_send   = "https://pay.ir/pg/send" ;
+	protected $url_charge = 'https://pay.ir/pg' ;
+	protected $url_verify = 'https://pay.ir/pg/verify' ;
+	protected $url_send   = 'https://pay.ir/pg/send' ;
 	
 	protected abstract function getApi();
 

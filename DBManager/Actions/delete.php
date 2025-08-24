@@ -20,9 +20,9 @@ class Delete extends Action {
 		
 		$ctb = $this->Table( );
 		
-		$tableValue = ( $cdb ) ? $cdb . "." . $ctb : $ctb ;
+		$tableValue = ( $cdb ) ? $cdb . '.' . $ctb : $ctb ;
 
-		$this->Limit .= ( strlen( $this->Offset ) ) ? " " . $this->Offset : "" ;
+		$this->Limit .= ( strlen( $this->Offset ) ) ? ' ' . $this->Offset : '' ;
 		
 		$this->Query = $this->Connector( )->QueryDriver->delete( $tableValue , $this->Where , $this->Limit );
 	

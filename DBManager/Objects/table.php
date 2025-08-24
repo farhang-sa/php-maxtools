@@ -155,7 +155,7 @@ class Table extends MaxDBObject {
 			
 			} else if ( is_string( $database ) ) $this->Database = $database;
 
-			self::addInstance( $this->Server . "@" . $this->Database . ":" . $this->Name , $this )  ;
+			self::addInstance( $this->Server . '@' . $this->Database . ':' . $this->Name , $this )  ;
 
 		} return ( $this->Database ) ? Database::getInstance( $this->Database ) : false ;
 	

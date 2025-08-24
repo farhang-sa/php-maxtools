@@ -4,9 +4,9 @@ defined( 'MaxPaymentInit' ) or die( 'Access Denied' );
 
 abstract class NextPayBase implements Payment {
     
-    protected $url_charge   = "https://nextpay.org/nx/gateway/payment/" ;
-    protected $url_send     = "https://nextpay.org/nx/gateway/token" ;  
-    protected $url_verify   = "https://nextpay.org/nx/gateway/verify" ;  
+    protected $url_charge   = 'https://nextpay.org/nx/gateway/payment/' ;
+    protected $url_send     = 'https://nextpay.org/nx/gateway/token' ;  
+    protected $url_verify   = 'https://nextpay.org/nx/gateway/verify' ;  
     
     protected abstract function getApi();
     
@@ -42,8 +42,8 @@ abstract class NextPayBase implements Payment {
         curl_close($curl);
         
         $response = json_decode( $response , true );
-        $code = $response[ "code" ]; // -1 : success
-        $trid = $response[ "trans_id" ];
+        $code = $response[ 'code' ]; // -1 : success
+        $trid = $response[ 'trans_id' ];
         
         if( $code >= 0 )
         	return -1 ; // error 
