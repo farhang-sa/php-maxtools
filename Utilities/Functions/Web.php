@@ -62,9 +62,7 @@ function WebDomainFull(){
   	//http://user@localhost:8080 OR http://user@127.0.0.1:8080
 
   	$scheme = WebSchame();
-  
-  	$domain = ( isset( $_SERVER[ 'HTTP_HOST' ] ) ) ? $_SERVER[ 'HTTP_HOST' ] : null ;
-  	$domain = ( $domain === null ) ? WebDomain() : $domain ;
+  	$domain = WebDomain();
 
   	if( ! isCli() && $domain === null )
   		die( 'WebDomainFull() error' );
