@@ -168,7 +168,7 @@ function WebPath( $root ){
 }
 
 // Get Web-Link ( Direct-Link ) of a file
-function FindWebPath( $address = null , $root ){
+function FindWebPath( $address , $root ){
     
 	if ( ! file_exists( $address ) ) 
 		return false;
