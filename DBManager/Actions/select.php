@@ -205,13 +205,6 @@ class Select extends Action {
 	
 	}
 
-	public function getQuery( ){
-
-		$this->buildQuery();
-		return $this->Query ;
-
-	}
-	
 	protected function buildQuery( ) {
 
 		$cdb = $this->Database( );

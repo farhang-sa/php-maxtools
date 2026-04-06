@@ -266,8 +266,11 @@ abstract class Action extends Query {
 
 	public function exec( $q = null ) {
 
+		if( $q )
+			$this->Query( $q );
+
 		if ( method_exists( $this , 'buildQuery' ) ) 
-			$this->buildQuery( );
+			$this->buildQuery();
 
 		while( stristr( $this->Query , '  ' ) !== false )
 			$this->Query = str_ireplace( '  ' , ' ' , $this->Query );

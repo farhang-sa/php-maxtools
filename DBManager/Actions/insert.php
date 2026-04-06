@@ -284,7 +284,7 @@ class Insert extends Action {
 		
 		$TheColumns = '';
 
-		if( count( $this->InsertList ) == 1 )
+		if( count( $this->InsertList ) === 1 )
 
 			$UpdateKey = '' ;
 		
@@ -304,7 +304,11 @@ class Insert extends Action {
 
 							$UpdateKey .= "`{$v}`='{$InsertRow[$v]}' , ";
 					
-					} else $TheColumns .= " '' ,";
+					} else if( array_key_exists( $v , $InsertRow ) )
+
+						$TheColumns .= ' null ,';
+						
+					else $TheColumns .= " '' ,";
 				
 				} $TheColumns = substr( $TheColumns , 0 , - 1 );
 				

@@ -116,6 +116,31 @@ final class SqliteDriver extends SQLite3 implements SQLDriverInterface {
 	
 	}
 
+	// there is no multi query in sqlite3 ( only first command's results would return )
+	public function multiQuery( $q = null ){
+
+		if ( $q ) $this->Query = $q ;
+		
+		if ( stristr( $this->Query , 'insert' ) || stristr( $this->Query , 'update' ) ||  stristr( $this->Query , 'delete' ) )
+				
+			$Resualt = @parent::exec( $this->Query ) ;
+			
+		else $Resualt = @parent::query( $this->Query ) ;
+		
+		$this->Result = $Resualt ;
+			
+		if ( is_object( $Resualt ) ) $Resualt = $this->queryObject( $this->Result );
+		
+		else if ( $Resualt == false ) $this->hasError = true;
+		
+		$this->error( $this->lastErrorCode( ) . ' -> ' . $this->lastErrorMsg( ) );
+			
+		return $Resualt;
+	}
+
+	public function setCharset( $Charset = 'utf8' ){ 
+		@parent::exec( "PRAGMA encoding={$Charset} ;" ); }
+
 	public final function error( $error = null ) {
 
 		if ( $error ) $this->ERROR = $error;

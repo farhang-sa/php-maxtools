@@ -37,7 +37,7 @@ class Query {
 			
 			return false ;
 			
-		} if ( $q ) $this->Query = $q;
+		} if ( $q ) $this->Query( $q );
 		
 		$QueryExec = $this->Connector()->query( $this->Query );
 		
@@ -84,6 +84,9 @@ class Query {
 
 	public function Query( $q = null ) {
 
+		if( ! $q || empty( $q ) )
+			return $this->Query ? $this->Query : false;
+
 		if ( is_string( $q ) ) 
 			$this->Query = $q;
 		else if ( $q instanceof Query ) 
@@ -95,10 +98,18 @@ class Query {
 		else if ( $q instanceof Columns ) 
 			$this->Columns( $q );
 		
-		return ( $this->Query ) ? $this->Query : false;
+		return $this->Query ? $this->Query : false;
 			
 	}
 
+	public function getQuery( ){
+
+		if( method_exists( $this , 'buildQuery' ) )
+			$this->buildQuery();
+		return $this->Query ;
+
+	}
+	
 	public function Server( $Server = null ) {
 
 		if ( $Server ) {
