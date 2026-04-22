@@ -20,7 +20,7 @@ function ScriptFile(){
 }
 
 // get web schame ( http , https , ...)
-function WebSchame(){
+function WebScheme(){
   
   $schame = ( isset( $_SERVER['REQUEST_SCHEME'] ) ) ? strtolower( $_SERVER['REQUEST_SCHEME'] ) : null ;
   $schame = $schame ? $schame : 'http' ;
@@ -57,37 +57,52 @@ function WebDomain(){
 // get full domain name
 function WebDomainFull(){
  
-  	//full http/https Acess
-  	//http://user@xxx.ir:8080 OR http://user@www.xxx.ir:8080 OR 
-  	//http://user@localhost:8080 OR http://user@127.0.0.1:8080
+	//full http/https Acess
+	//http://user@xxx.ir:8080 OR http://user@www.xxx.ir:8080 OR 
+	//http://user@localhost:8080 OR http://user@127.0.0.1:8080
 
-  	$scheme = WebSchame();
-  	$domain = WebDomain();
+	$scheme = WebScheme();
+  
+	$domain = ( isset( $_SERVER[ 'HTTP_HOST' ] ) ) ? $_SERVER[ 'HTTP_HOST' ] : null ;
+	$domain = ( $domain === null ) ? WebDomain() : $domain ;
 
-  	if( ! isCli() && $domain === null )
-  		die( 'WebDomainFull() error' );
+	if( ! isCli() && $domain === null )
+		die( 'WebDomainFull() error' );
 
 	$port = isset( $_SERVER['SERVER_PORT'] ) ? ( int ) $_SERVER['SERVER_PORT'] : 0 ;
 	$port = $port === 0 && $scheme === 'http' ? 80 : $port ;
 	$port = $port === 0 && $scheme === 'https' ? 443 : $port ;
   	
-  	$domain = trim( $domain , '/' );
-  	
-	if( $scheme === 'http' ) // no need 80 for http
-		$domain .= ( $port !== 80 ) ? ':' . $port : '' ; 
-	else if( $scheme === 'https' ) // no need 80/443 for https
-		$domain .= ( $port !== 443 && $port !== 80 ) ? ':' . $port : '' ; 
+	$domain = trim( $domain , '/' );
+	if( stristr( $domain , ':' . $port ) === false ) {
+		// no need 80 for http
+		if( $scheme === 'http' ) 
+			$domain .= ( $port !== 80 ) ? ':' . $port : '' ; 
+		// no need 80/443 for https
+		else if( $scheme === 'https' ) 
+			$domain .= ( $port !== 443 && $port !== 80 ) ? ':' . $port : '' ; 
+	}
   
-  	$authUser = ( isset( $_SERVER['PHP_AUTH_USER'] ) ) ? $_SERVER['PHP_AUTH_USER'] : null ;
-  	// $authPass = ( isset( $_SERVER['PHP_AUTH_PW'] ) ) ? $_SERVER['PHP_AUTH_PW'] : null ;
-  	$authInfo = ( $authUser ) ? $authUser : null ;
-  	// no pass in url!!!! 
-  	// $authInfo && $authInfo .= ( $authPass ) ? ":" . $authPass : "" ;
+	$authUser = ( isset( $_SERVER['PHP_AUTH_USER'] ) ) ? $_SERVER['PHP_AUTH_USER'] : null ;
+	// $authPass = ( isset( $_SERVER['PHP_AUTH_PW'] ) ) ? $_SERVER['PHP_AUTH_PW'] : null ;
+	$authInfo = ( $authUser ) ? $authUser : null ;
+	// no pass in url!!!! 
+	// $authInfo && $authInfo .= ( $authPass ) ? ":" . $authPass : "" ;
     
-  	$domain = ( $authInfo !== null ) ? "{$authInfo}@{$domain}" : $domain ;
+	$domain = ( $authInfo !== null ) ? "{$authInfo}@{$domain}" : $domain ;
   	
-  	return trim( $scheme . '://' . $domain , ' /' );
+	return trim( $scheme . '://' . $domain , ' /' );
   
+}
+
+// server ip[ or list ]
+function HostIPList(){
+	$ipl = gethostbynamel( gethostname() );
+	$ipl = ! is_array( $ipl ) || empty( $ipl ) ? array() : $ipl ;
+	$ips = isset( $_SERVER['SERVER_ADDR'] )	? $_SERVER['SERVER_ADDR'] : null ;
+	if( $ips && ! in_array( $ips , $ipl ) )
+		$ipl[] = $ips ;
+	return $ipl ;
 }
 
 // finds exec dir's web-path relavent to site's root;
