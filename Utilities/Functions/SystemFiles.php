@@ -1,28 +1,50 @@
 <?php namespace MaxTools ;
 
 // Copy All Files from $src folder to $dst folder
-function Copy( $src , $dst ) { 
+function Copy( $src , $dst , $overwrite = true ) { 
 
-	if( empty( $dst ) )
-		return;
+  if( empty( $src ) || empty( $dst ) )
+    return;
 
-    $dir = opendir( $src ); 
+  // copy file to new-file/folder
+  if( is_file( $src ) ){
 
-    if( ! is_dir( $dst ) )
-    	@mkdir( $dst ); 
+    if( is_file( $dst ) && ! $overwrite )
+      return ;
 
-    while( false !== ( $file = readdir($dir) ) ) { 
+    if( is_dir( $dst ) ){ // copy file to new-path
 
-        if (( $file != '.' ) && ( $file != '..' )) { 
+      $path = $dst . MaxTools_DS . basename( $src ) ;
+      if( is_file( $path ) && ! $overwrite )
+        return ;
+      @copy( $src , $path );
+      return ;
 
-            if ( is_dir($src . MaxTools_DS . $file) ) 
-              MaxTools\Copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
+    } // else : file to new-file
 
-            else copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
+    $path = dirname( $dst );
+    if( ! is_dir( $path ) )
+      @mkdir( $path );
+    @copy( $src , $dst );
+    return ;
 
-        } 
+  } // else : copy folder to folder
 
-    } closedir($dir); 
+  $dir = opendir( $src ); 
+
+  if( ! is_dir( $dst ) )
+    @mkdir( $dst ); 
+
+  while( false !== ( $file = readdir($dir) ) ) { 
+
+    if( $file === '.' || $file == '..' )
+      continue ; // ignore!
+
+    if ( is_file($src . MaxTools_DS . $file) ) 
+      @copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
+    else MaxTools\Copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
+
+  } closedir($dir); 
     
 }
 
@@ -42,11 +64,21 @@ function Delete( $src ){
 			if( $fi === '.' || $fi === '..' )
 				continue;
 
-			MaxTools\Delete( $src . MaxTools_DS . $fi );
+      if( is_file( $src . MaxTools_DS . $fi ) )
+        @unlink( $src . MaxTools_DS . $fi );
+			else MaxTools\Delete( $src . MaxTools_DS . $fi );
 
 		} @unlink( $src );
 
 	}
+
+}
+
+// cut file/folder to new-file/folder
+function Move( $src , $dest ){
+
+  MaxTools\Copy( $src , $dest );
+  MaxTools\Delete( $src );
 
 }
 

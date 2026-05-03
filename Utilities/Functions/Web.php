@@ -1,9 +1,5 @@
 <?php namespace MaxTools ;
 
-// check if we are in cli ( command line , terminal , ... )
-function isCli() { 
-  return ( PHP_SAPI === 'cli' ) ? true : false ; }
-
 // get name of entering script file name ( start of php interpretation )
 function ScriptFile(){
   

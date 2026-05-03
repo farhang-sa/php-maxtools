@@ -1,5 +1,9 @@
 <?php namespace MaxTools ;
 
+// check if we are in cli ( command line , terminal , ... )
+function isCli() { 
+  return ( PHP_SAPI === 'cli' ) ? true : false ; }
+
 // Find Exec available functions
 function ExecFunctions(){
 
@@ -117,6 +121,10 @@ function FindClass(){
 // check if this array is indexed by numbers
 function isIndexedArray( $array ){
 
+  // php 8.1
+  if ( function_exists('array_is_list') )
+    return array_is_list($array);
+
   $i = 0 ;
   while( $i <= count( $array ) - 1 ){
 
@@ -131,7 +139,6 @@ function isIndexedArray( $array ){
 // check if this array is Assoc
 function isAssocArray( $array ){
   return ! isIndexedArray( $array ) ; }
-
 
 // check if array is one dimensinal
 function isOneDimensionalArray( $array ){
@@ -148,9 +155,9 @@ function isOneDimensionalArray( $array ){
 function br( $c = 1 ) {
 
   $r = '';
-  $e = ( PHP_SAPI === 'cli' ) ? PHP_EOL : PHP_EOL . '<br />' ;
+  $e = MaxTools\isCli() ? PHP_EOL : PHP_EOL . '<br />' ;
 
-  for( $i = 1 ; $i <= ( int ) $c ; $i ++ ) 
+  for( $i = 1 ; $i <= ( int ) $c ; $i++ ) 
     $r .= ' ' . $e ;
   
   return $r;
@@ -171,7 +178,7 @@ function addSlashe( $StringsArray = array() ){
       else if ( is_string( $v1 ) ) 
         $v[ $k1 ] = str_ireplace( $E , "\\n" , trim( addslashes( $v1 ) ) ) ;
 
-    } else if ( is_string( $v ) ) 
+    } else if ( is_string( $v ) )
       $v = str_ireplace( $E , "\\n" , trim( addslashes( $v ) ) ) ;
 
     $StringsArray[ $k ] = $v ;
