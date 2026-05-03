@@ -81,3 +81,18 @@ function findBestMatchValue( $needle , $stack ){
 
 }
 
+function generate_uuid(){
+
+    // Generate 16 bytes of random data
+    $data = random_bytes(16);
+
+    // Set version bits (4 for UUID version 4)
+    $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+
+    // Set version bits (1, 2, or 3 for UUID variant 1)
+    $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+
+    // Output the UUID in hexadecimal format
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+
+}
