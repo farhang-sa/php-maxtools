@@ -17,7 +17,7 @@ function Copy( $src , $dst , $overwrite = true ) {
       $path = $dst . MaxTools_DS . basename( $src ) ;
       if( is_file( $path ) && ! $overwrite )
         return ;
-      @copy( $src , $path );
+      @\copy( $src , $path );
       return ;
 
     } // else : file to new-file
@@ -25,7 +25,7 @@ function Copy( $src , $dst , $overwrite = true ) {
     $path = dirname( $dst );
     if( ! is_dir( $path ) )
       @mkdir( $path );
-    @copy( $src , $dst );
+    @\copy( $src , $dst );
     return ;
 
   } // else : copy folder to folder
@@ -41,8 +41,8 @@ function Copy( $src , $dst , $overwrite = true ) {
       continue ; // ignore!
 
     if ( is_file($src . MaxTools_DS . $file) ) 
-      @copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
-    else MaxTools\Copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
+      @\copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
+    else Copy($src . MaxTools_DS . $file , $dst . MaxTools_DS . $file); 
 
   } closedir($dir); 
     
@@ -51,34 +51,34 @@ function Copy( $src , $dst , $overwrite = true ) {
 // Delete file or entire directory!
 function Delete( $src ){
 
-	if( is_file( $src ) )
-		@unlink( $src );
+  if( is_file( $src ) )
+    @unlink( $src );
 
-	else if( is_dir( $src ) ) {
+  else if( is_dir( $src ) ) {
 
-		// clean folder then delete!
-		$sc = scandir( $src );
+    // clean folder then delete!
+    $sc = scandir( $src );
 
-		foreach( $sc as $fi ){
+    foreach( $sc as $fi ){
 
-			if( $fi === '.' || $fi === '..' )
-				continue;
+      if( $fi === '.' || $fi === '..' )
+        continue;
 
       if( is_file( $src . MaxTools_DS . $fi ) )
         @unlink( $src . MaxTools_DS . $fi );
-			else MaxTools\Delete( $src . MaxTools_DS . $fi );
+      else Delete( $src . MaxTools_DS . $fi );
 
-		} @unlink( $src );
+    } @rmdir( $src );
 
-	}
+  }
 
 }
 
 // cut file/folder to new-file/folder
 function Move( $src , $dest ){
 
-  MaxTools\Copy( $src , $dest );
-  MaxTools\Delete( $src );
+  Copy( $src , $dest );
+  Delete( $src );
 
 }
 
